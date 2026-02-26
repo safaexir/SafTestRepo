@@ -70,6 +70,12 @@ try:
     
     # Authorize and open sheet
     client = gspread.authorize(creds)
+    # Add this temporarily to see all available sheets
+    try:
+        all_sheets = client.openall()
+        print(f"Available sheets: {[sheet.title for sheet in all_sheets]}")
+    except Exception as e:
+    print(f"Error listing sheets: {e}")
     sheet = client.open(SHEET_NAME).sheet1
     print(f"✅ Successfully connected to sheet: {SHEET_NAME}")
     
