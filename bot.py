@@ -1,3 +1,35 @@
+import threading
+import os
+import time
+from flask import Flask
+
+# ==========================
+# HEALTH CHECK SERVER (CRITICAL FOR RENDER)
+# ==========================
+
+# Create Flask app for health checks
+health_app = Flask(__name__)
+
+@health_app.route('/')
+@health_app.route('/health')
+@health_app.route('/healthz')
+def health():
+    return 'OK', 200
+
+def run_health_server():
+    """Run Flask server in a separate thread"""
+    port = int(os.environ.get('PORT', 10000))
+    print(f"Starting health check server on port {port}...")
+    health_app.run(host='0.0.0.0', port=port)
+
+# Start health server in background
+health_thread = threading.Thread(target=run_health_server, daemon=True)
+health_thread.start()
+print("✅ Health check server started - Render will now detect the open port")
+
+# Give the server a moment to start
+time.sleep(2)
+
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
